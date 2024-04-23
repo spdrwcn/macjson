@@ -24,5 +24,27 @@
 }
 ```
 
+ - 多个如下:
+
+```
+{
+  "a1": {
+    "bluetooth_mac": "60:A5:E2:43:BE:48",
+    "wired_mac": "04:BF:1B:65:ED:9A",
+    "wireless_mac": "60:A5:E2:43:BE:44"
+  },
+  "a2": {
+    "bluetooth_mac": "60:A5:E2:43:BE:48",
+    "wired_mac": "04:BF:1B:65:ED:9A",
+    "wireless_mac": "60:A5:E2:43:BE:44"
+  },
+  "BPB4BX3": {
+    "bluetooth_mac": "60:A5:E2:43:BE:48",
+    "wired_mac": "04:BF:1B:65:ED:9A",
+    "wireless_mac": "60:A5:E2:43:BE:44"
+  }
+}
+```
+
 ### Execl表格可直接导入
 
