@@ -1,6 +1,6 @@
 ## macjson
 
- - 从`redis`获取所有键值对并写入`json`文件内
+ - 从`redis`获取所有键值对并写入`mac.json`文件内
 
 ### value格式必须为`json`格式，如下：
 
