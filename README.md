@@ -1,6 +1,7 @@
 ## macjson
 
  - 从`redis`获取所有键值对并写入`mac.json`文件内
+ - 100万个键值对用时`45s`
 
 ### value格式必须为`json`格式，如下：
 
