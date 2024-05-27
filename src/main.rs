@@ -16,7 +16,7 @@ struct DeviceInfo {
 
 fn get_matches() -> clap::ArgMatches<'static> {
     let matches = ClapApp::new("macjson")
-        .version("1.0.0")
+        .version("1.1.0")
         .author("h13317136163@163.com")
         .about("MAC地址Redis格式化工具")
         .arg(
