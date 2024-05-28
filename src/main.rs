@@ -66,17 +66,18 @@ fn write_to_file(json_string: &str) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let start_time = Instant::now();
     let matches = get_matches();
     let ip_address = matches.value_of("ip").unwrap();
     let client = get_client(ip_address)?;
     let mut con = client.get_connection()?;
-    let start_time = Instant::now();
     let keys = get_keys(&mut con)?;
     let key_value_pairs = get_device_infos(&mut con, &keys)?;
     let json_string = to_string_pretty(&key_value_pairs)?;
     write_to_file(&json_string)?;
     let elapsed_time = start_time.elapsed();
-    println!("Execution time: {:?}", elapsed_time);
+    println!("获取数据: {}组", keys.len());
+    println!("用时: {:?}", elapsed_time);
     println!("Press Enter to exit...");  
     std::io::stdin().read_line(&mut String::new()).unwrap();  
     Ok(())
