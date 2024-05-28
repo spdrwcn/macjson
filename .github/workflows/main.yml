@@ -1,30 +1,37 @@
-name: Rust Release
-
-on:
-  push:
-    tags:
-      - 'v*'
-
+name: Rust Cross-Compile for Windows (GNU)  
+  
+on:  
+  release:  
+    types: [created]  
+  
 jobs:
   release:
     name: Release - ${{ matrix.platform.release_for }}
     strategy:
       matrix:
         platform:
-          - release_for: linux_x64
-            os: ubuntu-22.04
-            target: x86_64-unknown-linux-gnu
-            bin: gcwd
-            name: gcwd_linux_x64.tar.gz
+          - release_for: FreeBSD-x86_64
+            os: ubuntu-20.04
+            target: x86_64-unknown-freebsd
+            bin: precious
+            name: precious-FreeBSD-x86_64.tar.gz
             command: build
 
-          - release_for: darwin_arm64
+          - release_for: Windows-x86_64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            bin: precious.exe
+            name: precious-Windows-x86_64.zip
+            command: both
+
+          - release_for: macOS-x86_64
             os: macOS-latest
-            target: aarch64-apple-darwin
-            bin: precgcwdious
-            name: gcwd_darwin_arm64.tar.gz
-            command: build
+            target: x86_64-apple-darwin
+            bin: precious
+            name: precious-Darwin-x86_64.tar.gz
+            command: both
 
+            # more release targets here ...
 
     runs-on: ${{ matrix.platform.os }}
     steps:
@@ -38,3 +45,4 @@ jobs:
           args: "--locked --release"
           strip: true
 
+    # more packaging stuff goes here ...
