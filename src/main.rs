@@ -1,12 +1,14 @@
+use clap::{App, Arg};
+use rayon::prelude::*;
 use redis::{Client, Commands};
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::Write;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::to_string_pretty;
-use clap::{App as ClapApp, Arg};
+use std::collections::HashMap;
+use std::fs::File;
+use std::io::Write;
 use std::time::Instant;
+
 #[derive(Serialize, Deserialize, Debug)]
 struct DeviceInfo {
     bluetooth_mac: String,
@@ -15,8 +17,8 @@ struct DeviceInfo {
 }
 
 fn get_matches() -> clap::ArgMatches<'static> {
-    let matches = ClapApp::new("macjson")
-        .version("1.1.0")
+    let matches = App::new("macjson")
+        .version("1.2.0")
         .author("h13317136163@163.com")
         .about("MAC地址Redis格式化工具")
         .arg(
@@ -41,7 +43,10 @@ fn get_keys(con: &mut redis::Connection) -> Result<Vec<String>, Box<dyn std::err
     Ok(keys)
 }
 
-fn get_device_infos(con: &mut redis::Connection, keys: &[String]) -> Result<HashMap<String, DeviceInfo>, Box<dyn std::error::Error>> {
+fn get_device_infos(
+    con: &mut redis::Connection,
+    keys: &[String],
+) -> Result<HashMap<String, DeviceInfo>, Box<dyn std::error::Error>> {
     let mut key_value_pairs: HashMap<String, DeviceInfo> = HashMap::new();
     let mut pipe = redis::pipe();
 
@@ -51,9 +56,17 @@ fn get_device_infos(con: &mut redis::Connection, keys: &[String]) -> Result<Hash
 
     let values: Vec<String> = pipe.query(con)?;
 
-    for (key, value) in keys.iter().zip(values) {
-        let device_info: DeviceInfo = serde_json::from_str(&value)?;
-        key_value_pairs.insert(key.to_owned(), device_info);
+    let results: Vec<(String, DeviceInfo)> = keys
+        .par_iter()
+        .zip(values.par_iter())
+        .map(|(key, value)| {
+            let device_info: DeviceInfo = serde_json::from_str(&value).unwrap();
+            (key.to_owned(), device_info)
+        })
+        .collect();
+
+    for (key, value) in results {
+        key_value_pairs.insert(key, value);
     }
 
     Ok(key_value_pairs)
@@ -78,7 +91,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let elapsed_time = start_time.elapsed();
     println!("获取数据: {}组", keys.len());
     println!("用时: {:?}", elapsed_time);
-    println!("Press Enter to exit...");  
-    std::io::stdin().read_line(&mut String::new()).unwrap();  
     Ok(())
 }
