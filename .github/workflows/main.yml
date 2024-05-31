@@ -34,6 +34,7 @@ jobs:
             os: macos-latest
           - target: x86_64-pc-windows-gun
             os: windows-latest
+            build-tool: cargo-zigbuild
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
