@@ -1,5 +1,8 @@
-# .github/workflows/release.yml
+name: Release
 
+permissions:
+  contents: write
+  
 on:
   release:
     types: [created]
@@ -11,9 +14,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: taiki-e/create-gh-release-action@v1
         with:
-          # (optional)
+          # (optional) Path to changelog.
           changelog: CHANGELOG.md
-          # (required)
+          # (required) GitHub token for creating GitHub Releases.
           token: ${{ secrets.GITHUB_TOKEN }}
 
   upload-assets:
@@ -21,28 +24,26 @@ jobs:
     strategy:
       matrix:
         include:
-          - target: x86_64-unknown-linux-gnu
+          - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
-            build-tool: cargo-zigbuild
-          - target: aarch64-unknown-linux-musl
-            os: ubuntu-latest
-            build-tool: cargo-zigbuild
           - target: aarch64-apple-darwin
             os: macos-latest
-            build-tool: cargo-zigbuild
-          - target: x86_64-pc-windows-gun
-            os: windows-latest
-            build-tool: cargo-zigbuild
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          # Universal macOS binary is supported as universal-apple-darwin.
+          - target: universal-apple-darwin
+            os: macos-latest
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
-          # (required)
+          # (required) Comma-separated list of binary names (non-extension portion of filename) to build and upload.
+          # Note that glob pattern is not supported yet.
           bin: macjson
           # (optional) Target triple, default is host triple.
           target: ${{ matrix.target }}
-          # (optional) Tool to build binaries (cargo, cross, or cargo-zigbuild)
-          build-tool: ${{ matrix.build-tool }}
           # (required) GitHub token for uploading assets to GitHub Releases.
           token: ${{ secrets.GITHUB_TOKEN }}
