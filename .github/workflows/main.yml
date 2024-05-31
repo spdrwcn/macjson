@@ -1,27 +1,27 @@
-name: Build and upload release
+# .github/workflows/release.yml
 
 on:
   release:
     types: [created]
 
 jobs:
-  build:
-    name: Build for ${{ matrix.target }}
+  release:
+    name: release ${{ matrix.target }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        target: [x86_64-apple-darwin, x86_64-unknown-linux-gnu, x86_64-pc-windows-gnu]
+        include:
+          - target: x86_64-pc-windows-gnu
+            archive: zip
+          - target: x86_64-unknown-linux-musl
+            archive: tar.gz
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Install zig
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y zig
-    - name: Build binary
-      run: zig build-exe -Dtarget=${{ matrix.target }} macjson.zig -lcurl
-    - name: Upload binary
-      uses: actions/upload-artifact@v2
-      with:
-        name: macjson-${{ matrix.target }}
-        path: macjson
+      - uses: actions/checkout@master
+      - name: Compile and release
+        uses: rust-build/rust-build.action@v1.4.5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          RUSTTARGET: ${{ matrix.target }}
+          ARCHIVE_TYPES: ${{ matrix.archive }}
