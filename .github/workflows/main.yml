@@ -36,6 +36,7 @@ jobs:
             os: windows-latest
           - target: x86_64-pc-windows-gun
             os: windows-latest
+            build-tool: cross
          
     runs-on: ${{ matrix.os }}
     steps:
