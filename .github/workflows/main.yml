@@ -33,9 +33,9 @@ jobs:
           - target: universal-apple-darwin
             os: macos-latest
           - target: x86_64-pc-windows-msvc
-            os: windows-latest
+            os: ubuntu-latest
           - target: x86_64-pc-windows-gnu
-            os: windows-latest
+            os: ubuntu-latest
             build-tool: cross
          
     runs-on: ${{ matrix.os }}
