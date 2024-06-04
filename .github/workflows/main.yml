@@ -30,7 +30,7 @@ jobs:
             os: macos-latest
           - target: x86_64-pc-windows-gnu
             os: windows-latest
-            build-tool: cross
+          
          
     runs-on: ${{ matrix.os }}
     steps:
@@ -40,6 +40,5 @@ jobs:
         with:
           bin: macjson
           target: ${{ matrix.target }}
-          build-tool: ${{ matrix.build-tool }}
           archive: $bin-$tag-$target
           token: ${{ secrets.GITHUB_TOKEN }}
