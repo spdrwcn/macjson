@@ -34,15 +34,13 @@ jobs:
             os: macos-latest
           - target: x86_64-pc-windows-msvc
             os: windows-latest
-          - target: x86_64-pc-windows-gun
+          - target: x86_64-pc-windows-gnu
             os: windows-latest
             build-tool: cross
          
     runs-on: ${{ matrix.os }}
     steps:
-      - name: add x86_64-pc-windows-gun
-        run: |
-          rustup target add x86_64-pc-windows-gnu
+      
       - uses: actions/checkout@v4
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
