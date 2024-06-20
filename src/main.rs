@@ -1,4 +1,4 @@
-use clap::{App, Arg};
+use std::env;
 use rayon::prelude::*;
 use redis::{Client, Commands};
 use serde::Deserialize;
@@ -14,23 +14,6 @@ struct DeviceInfo {
     bluetooth_mac: String,
     wired_mac: String,
     wireless_mac: String,
-}
-
-fn get_matches() -> clap::ArgMatches<'static> {
-    let matches = App::new("macjson")
-        .version("1.2.0")
-        .author("h13317136163@163.com")
-        .about("MAC地址Redis格式化工具")
-        .arg(
-            Arg::with_name("ip")
-                .short("i")
-                .long("ip")
-                .value_name("IP_ADDRESS")
-                .help("Redis数据库地址")
-                .default_value("redis://127.0.0.1:6379/0"),
-        )
-        .get_matches();
-    matches
 }
 
 fn get_client(ip_address: &str) -> Result<Client, Box<dyn std::error::Error>> {
@@ -79,6 +62,12 @@ fn write_to_file(json_string: &str) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args: Vec<String> = env::args().collect();
+    let ip_address = if args.len() > 1 {
+        &args[1]
+    } else {
+        "redis://127.0.0.1:6379/0"
+    };
     let start_time = Instant::now();
     let matches = get_matches();
     let ip_address = matches.value_of("ip").unwrap();
