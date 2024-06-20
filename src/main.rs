@@ -8,8 +8,8 @@ use serde_json::to_string_pretty;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
-use std::time::Instant;
 use std::process;
+use std::time::Instant;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -77,7 +77,6 @@ fn write_to_file(json_string: &str, path: &str) -> Result<(), Box<dyn std::error
     Ok(())
 }
 
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cli = Cli::parse();
     let ip_pattern = Regex::new(r"^redis://((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):([1-9]\d{0,4}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])/([0-9]|1[0-5])$").unwrap();
@@ -86,7 +85,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         eprintln!("错误: 请输入正确的Redis地址格式, 例如 'redis://127.0.0.1:6379/0'");
         process::exit(1);
     }
-    
+
     let start_time = Instant::now();
     let client = get_client(&cli.ip_address)?;
     let mut con = client.get_connection()?;
