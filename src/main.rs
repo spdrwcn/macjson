@@ -69,8 +69,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "redis://127.0.0.1:6379/0"
     };
     let start_time = Instant::now();
-    let matches = get_matches();
-    let ip_address = matches.value_of("ip").unwrap();
     let client = get_client(ip_address)?;
     let mut con = client.get_connection()?;
     let keys = get_keys(&mut con)?;
