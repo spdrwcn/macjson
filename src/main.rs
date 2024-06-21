@@ -8,16 +8,24 @@ use serde_json::to_string_pretty;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
-use std::process;
 use std::time::Instant;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
-    #[arg(short, long, default_value_t = String::from("redis://127.0.0.1:6379/0"))]
+    #[arg(short, long, default_value_t = String::from("redis://127.0.0.1:6379/0"), value_parser = redis_ip_address_parser)]
     ip_address: String,
     #[arg(short, long, default_value_t = String::from("mac.json"))]
     path: String,
+}
+
+fn redis_ip_address_parser(s: &str) -> Result<String, String> {
+    let ip_pattern = Regex::new(r"^redis://((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):([1-9]\d{0,4}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])/([0-9]|1[0-5])$").unwrap();
+
+    if !ip_pattern.is_match(s) {
+        return Err("错误: 请输入正确的Redis地址格式, 例如 'redis://127.0.0.1:6379/0'".to_string());
+    }
+    Ok(s.to_string()) 
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -77,16 +85,10 @@ fn write_to_file(json_string: &str, path: &str) -> Result<(), Box<dyn std::error
     Ok(())
 }
 
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let cli = Cli::parse();
-    let ip_pattern = Regex::new(r"^redis://((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):([1-9]\d{0,4}|[1-5]\d{4}|6[0-4]\d{3}|65[0-4]\d{2}|655[0-2]\d|6553[0-5])/([0-9]|1[0-5])$").unwrap();
-
-    if !ip_pattern.is_match(&cli.ip_address) {
-        eprintln!("错误: 请输入正确的Redis地址格式, 例如 'redis://127.0.0.1:6379/0'");
-        process::exit(1);
-    }
-
     let start_time = Instant::now();
+    let cli = Cli::parse();
     let client = get_client(&cli.ip_address)?;
     let mut con = client.get_connection()?;
     let keys = get_keys(&mut con)?;
